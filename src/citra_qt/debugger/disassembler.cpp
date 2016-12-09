@@ -98,35 +98,15 @@ const BreakPoints& DisassemblerModel::GetBreakPoints() const {
 void DisassemblerModel::ParseFromAddress(unsigned int address) {
 
     // NOTE: A too large value causes lagging when scrolling the disassembly
-    const unsigned int chunk_size = 1000 * 500;
+    const unsigned int chunk_size = 1000 * 100;
 
-    // If we haven't loaded anything yet, initialize base address to the parameter address
-    if (code_size == 0)
-        base_address = address;
+    base_address = address;
+ 
+    unsigned int num_rows = (base_address + chunk_size - code_size - address) / 4;
 
-    // If the new area is already loaded, just continue
-    if (base_address + code_size > address + chunk_size && base_address <= address)
-        return;
-
-    // Insert rows before currently loaded data
-    if (base_address > address) {
-        unsigned int num_rows = (address - base_address) / 4;
-
-        beginInsertRows(QModelIndex(), 0, num_rows);
-        code_size += num_rows;
-        base_address = address;
-
-        endInsertRows();
-    }
-
-    // Insert rows after currently loaded data
-    if (base_address + code_size < address + chunk_size) {
-        unsigned int num_rows = (base_address + chunk_size - code_size - address) / 4;
-
-        beginInsertRows(QModelIndex(), 0, num_rows);
-        code_size += num_rows;
-        endInsertRows();
-    }
+    beginInsertRows(QModelIndex(), 0, num_rows);
+    code_size += num_rows;
+    endInsertRows();
 
     SetNextInstruction(address);
 }

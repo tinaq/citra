@@ -101,7 +101,7 @@ void DisassemblerModel::ParseFromAddress(unsigned int address) {
     const unsigned int chunk_size = 1000 * 100;
 
     base_address = address;
- 
+
     unsigned int num_rows = (base_address + chunk_size - code_size - address) / 4;
 
     beginInsertRows(QModelIndex(), 0, num_rows);
